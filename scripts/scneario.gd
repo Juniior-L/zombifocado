@@ -1,13 +1,17 @@
 extends Node2D
 @export var cena_inimigo: PackedScene
+@export var cena_item: PackedScene
+var abates := 0
 @onready var horda: Timer = $Horda
 @onready var relogio: Timer = $Relogio
 @onready var jogador := $Jogador
 @onready var texto_vida: Label = $HUD/Vida
 @onready var texto_tempo: Label = $HUD/Tempo
 func _process(_delta: float) -> void:
-	texto_vida.text = "Vida: %d" % jogador.vida
-	texto_tempo.text = "Tempo: %d" % ceil(relogio.time_left)
+	texto_vida.text = "Vida: %d Abates: %d" % [jogador.vida, abates]
+	texto_tempo.text = "Itens: %d / 20" % coletados
+func inimigo_morreu(_inimigo: Node2D) -> void:
+	abates += 1
 func _on_horda_timeout() -> void:
 	var inimigo := cena_inimigo.instantiate()
 	inimigo.global_position = $Nascedouros.get_children().pick_random().global_position
@@ -22,3 +26,15 @@ func vencer() -> void:
 	get_tree().change_scene_to_file.call_deferred("res://scenes/vitoria.tscn")
 func perder() -> void:
 	get_tree().change_scene_to_file.call_deferred("res://scenes/derrota.tscn")
+
+
+var coletados := 0
+
+func _on_itens_timeout() -> void:
+	var item := cena_item.instantiate()
+	item.global_position = $Pontos.get_children().pick_random().global_position
+	add_child(item)
+func coletou() -> void:
+	coletados += 1
+	if coletados >= 20:
+		vencer()

@@ -1,0 +1,22 @@
+[gd_scene format=3 uid="uid://buc46dw362bvr"]
+
+[ext_resource type="Script" uid="uid://btjyiifpea45e" path="res://scripts/item.gd" id="1_itrh2"]
+[ext_resource type="Texture2D" uid="uid://bhacfuc5jrgun" path="res://srpites/snowy_rock_1.png" id="2_lry01"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_rneu0"]
+radius = 6.0
+
+[node name="Item" type="Area2D" unique_id=406345829]
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("1_itrh2")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=39177206]
+position = Vector2(0, -2)
+scale = Vector2(0.53906244, 0.57812494)
+texture = ExtResource("2_lry01")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1287345650]
+shape = SubResource("CircleShape2D_rneu0")
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]

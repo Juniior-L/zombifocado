@@ -1,10 +1,11 @@
 [gd_scene format=3 uid="uid://chknyujw516nm"]
 
 [ext_resource type="Script" uid="uid://duk53hwdlqiv7" path="res://scripts/inimigo.gd" id="1_dc5j5"]
-[ext_resource type="Texture2D" uid="uid://pm54fjfsofjh" path="res://srpites/personagem.png" id="2_k3jr6"]
+[ext_resource type="Texture2D" uid="uid://dnarw0w2vg3cp" path="res://srpites/FocaGorda.png" id="2_dc5j5"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_f8p5q"]
-size = Vector2(10, 6)
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_6hpaf"]
+radius = 16.0
+height = 50.0
 
 [node name="Inimigo" type="CharacterBody2D" unique_id=7157979 groups=["inimigo"]]
 collision_layer = 4
@@ -15,10 +16,16 @@ script = ExtResource("1_dc5j5")
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1481719266]
 modulate = Color(0.75876164, 0.1306571, 0.108707525, 1)
 z_index = 1
-texture = ExtResource("2_k3jr6")
-hframes = 4
-vframes = 4
+position = Vector2(-1.1920929e-07, 2.3841858e-07)
+rotation = -1.5707964
+scale = Vector2(0.10190837, 0.103332505)
+texture = ExtResource("2_dc5j5")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=181681359]
-position = Vector2(0, 5)
-shape = SubResource("RectangleShape2D_f8p5q")
+position = Vector2(6, 0)
+rotation = 1.5707964
+shape = SubResource("CapsuleShape2D_6hpaf")
+
+[node name="NavigationAgent2D" type="NavigationAgent2D" parent="." unique_id=1159806570]
+path_desired_distance = 4.0
+target_desired_distance = 4.0

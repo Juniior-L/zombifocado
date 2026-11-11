@@ -1,0 +1,12 @@
+LICENCE - Cosy Winter Village Tileset Free Sampler
+Copyright (c) 2026 Leckie Pixel Studio
+
+You MAY:
+ - use these assets in unlimited free or commercial games and projects
+ - edit, recolour and combine them with other art
+ - credit is appreciated but not required
+
+You MAY NOT:
+ - resell or redistribute the assets on their own or as part of another asset pack, even if modified
+ - claim the original artwork as your own
+ - use the assets to train machine-learning models
