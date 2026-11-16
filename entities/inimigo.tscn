@@ -2,10 +2,82 @@
 
 [ext_resource type="Script" uid="uid://duk53hwdlqiv7" path="res://scripts/inimigo.gd" id="1_dc5j5"]
 [ext_resource type="Texture2D" uid="uid://dnarw0w2vg3cp" path="res://srpites/FocaGorda.png" id="2_dc5j5"]
+[ext_resource type="Texture2D" uid="uid://dy6gjo5syhbwh" path="res://srpites/Spritesheet de Foca Mutante Ártica.png" id="2_k3jr6"]
+[ext_resource type="Texture2D" uid="uid://dnuveefshmq7b" path="res://srpites/andar_baixo_1_alta_resolucao.png" id="3_dg2rv"]
+[ext_resource type="Texture2D" uid="uid://f47efllpbjmy" path="res://srpites/andar_baixo_2_alta_resolucao.png" id="4_b30fx"]
+[ext_resource type="Texture2D" uid="uid://daf5fo4scrtj1" path="res://srpites/andar_baixo_3_alta_resolucao.png" id="5_xgb3y"]
+[ext_resource type="Texture2D" uid="uid://2oly65tbe4ao" path="res://srpites/andar_baixo_4_alta_resolucao.png" id="6_ak3ui"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xex7k"]
+atlas = ExtResource("2_k3jr6")
+region = Rect2(0, 0, 313, 313)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_h8vxb"]
+atlas = ExtResource("2_k3jr6")
+region = Rect2(313, 0, 313, 313)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qsp1r"]
+atlas = ExtResource("2_k3jr6")
+region = Rect2(626, 0, 313, 313)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_dg2rv"]
+atlas = ExtResource("2_k3jr6")
+region = Rect2(939, 0, 313, 313)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_oodrc"]
+atlas = ExtResource("3_dg2rv")
+region = Rect2(0, 0, 640, 640)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_02nop"]
+atlas = ExtResource("4_b30fx")
+region = Rect2(0, 0, 640, 640)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5431f"]
+atlas = ExtResource("5_xgb3y")
+region = Rect2(0, 0, 640, 640)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_bf81h"]
+atlas = ExtResource("6_ak3ui")
+region = Rect2(0, 0, 640, 640)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_f8p5q"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_xex7k")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_h8vxb")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qsp1r")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_dg2rv")
+}],
+"loop": 1,
+"name": &"default",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_oodrc")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_02nop")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5431f")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_bf81h")
+}],
+"loop": 1,
+"name": &"default2",
+"speed": 5.0
+}]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_6hpaf"]
-radius = 16.0
-height = 50.0
 
 [node name="Inimigo" type="CharacterBody2D" unique_id=7157979 groups=["inimigo"]]
 collision_layer = 4
@@ -13,7 +85,17 @@ collision_mask = 5
 motion_mode = 1
 script = ExtResource("1_dc5j5")
 
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=695600183]
+texture_filter = 1
+position = Vector2(1.9999993, 0)
+rotation = -1.5707964
+scale = Vector2(0.08147448, 0.07753216)
+sprite_frames = SubResource("SpriteFrames_f8p5q")
+animation = &"default2"
+autoplay = "default2"
+
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1481719266]
+visible = false
 modulate = Color(0.75876164, 0.1306571, 0.108707525, 1)
 z_index = 1
 position = Vector2(-1.1920929e-07, 2.3841858e-07)
@@ -22,7 +104,7 @@ scale = Vector2(0.10190837, 0.103332505)
 texture = ExtResource("2_dc5j5")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=181681359]
-position = Vector2(6, 0)
+position = Vector2(0, -1)
 rotation = 1.5707964
 shape = SubResource("CapsuleShape2D_6hpaf")
 

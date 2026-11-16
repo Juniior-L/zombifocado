@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://ddyc3xfbjovdo"]
 
 [ext_resource type="Script" uid="uid://b4c0drp6l2iub" path="res://entities/character_body_2d.gd" id="1_b0kkn"]
+[ext_resource type="PackedScene" uid="uid://ccudem0t3wn8q" path="res://entities/projetil.tscn" id="2_qly61"]
 [ext_resource type="Texture2D" uid="uid://dqlpkwknofdu" path="res://srpites/Cosy-Winter-Village-Sampler-32x32/Cosy-Winter-Village-Sampler-32x32/characters/villager_red_coat_3x4.png" id="2_rfe5m"]
 [ext_resource type="Texture2D" uid="uid://5875iobvfwhb" path="res://srpites/Seeker_Lite/Seeker_Lite/Spritesheets/Seeker_Void_Run_30x30_10f.png" id="4_qly61"]
 
@@ -225,6 +226,7 @@ radius = 20.0
 collision_layer = 2
 motion_mode = 1
 script = ExtResource("1_b0kkn")
+cena_projetil_gelo = ExtResource("2_qly61")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1298968696]
 position = Vector2(0, 5)
@@ -238,8 +240,8 @@ autoplay = "idle"
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1693568596]
 limit_left = 0
 limit_top = 0
-limit_right = 1152
-limit_bottom = 654
+limit_right = 2144
+limit_bottom = 1122
 
 [node name="Hurtbox" type="Area2D" parent="." unique_id=1122318012]
 collision_layer = 0

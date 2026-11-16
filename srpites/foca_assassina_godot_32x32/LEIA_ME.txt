@@ -1,0 +1,7 @@
+Foca assassina - spritesheets RGBA transparentes
+Cada frame: 32x32 pixels. Sem margens, sem bordas.
+andar_4_direcoes.png: 4 colunas x 4 linhas (baixo, direita, cima, esquerda).
+morte_6_frames.png: 6 colunas x 1 linha.
+spritesheet_completa.png: 6 colunas x 5 linhas (as 4 primeiras usam apenas 4 colunas; ultima tem morte).
+Godot: AnimatedSprite2D > SpriteFrames > Add frames from a Sprite Sheet. Use tamanho 32x32.
+Sugestao: andar 6-8 FPS em loop; morte 6 FPS sem loop.
