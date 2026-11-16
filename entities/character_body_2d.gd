@@ -7,20 +7,21 @@ extends CharacterBody2D
 
 var invencivel := false
 var pode_atacar := true
-var pode_usar_gelo := true
 var ultima_direcao := Vector2.DOWN
+var tempo_restante_gelo := 0.0
 
 @onready var anim: AnimatedSprite2D = $AnimatedSprite2D
 @onready var hurtbox: Area2D = $Hurtbox
 @onready var ataque: Area2D = $Ataque
 @onready var golpe: ColorRect = $Ataque/Golpe
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
+	tempo_restante_gelo = maxf(0.0, tempo_restante_gelo - delta)
 	if not invencivel and hurtbox.has_overlapping_bodies():
 		levar_dano()
 	if pode_atacar and Input.is_action_just_pressed("atacar"):
 		atacar()
-	if pode_usar_gelo and Input.is_action_just_pressed("poder_gelo"):
+	if Input.is_action_just_pressed("poder_gelo") and tempo_restante_gelo <= 0.0:
 		lancar_gelo()
 
 func _physics_process(_delta: float) -> void:
@@ -70,12 +71,8 @@ func lancar_gelo() -> void:
 	if cena_projetil_gelo == null:
 		push_warning("Defina cena_projetil_gelo no Inspector do Jogador.")
 		return
-	pode_usar_gelo = false
 	var projetil = cena_projetil_gelo.instantiate()
 	get_tree().current_scene.add_child(projetil)
 	projetil.global_position = global_position + ultima_direcao * 24.0
 	projetil.direcao = ultima_direcao
-	await get_tree().create_timer(recarga_gelo).timeout
-	if not is_inside_tree():
-		return
-	pode_usar_gelo = true
+	tempo_restante_gelo = maxf(0.01, recarga_gelo)

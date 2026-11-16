@@ -521,6 +521,7 @@ sources/5 = SubResource("TileSetAtlasSource_20sc1")
 script = ExtResource("1_x3c2r")
 cena_inimigo = ExtResource("3_x3c2r")
 cena_item = ExtResource("3_qi2ev")
+max_itens_ativos = 2
 metadata/_edit_vertical_guides_ = [1151.0, 2144.0]
 metadata/_edit_horizontal_guides_ = [655.0, 1122.0, 1122.0]
 
