@@ -45,8 +45,24 @@ const BARRA := Color("a7b7bd")
 const FUNDO_BARRA := Color(0.26, 0.32, 0.35, 0.55)
 const ALERTA := Color("c8a4a4")
 
+const NEVASCA = preload("res://scripts/nevasca.gd")
+
 func _ready() -> void:
 	criar_hud()
+	criar_nevasca()
+
+func criar_nevasca() -> void:
+	# A camada 0 fica sobre o mundo, mas abaixo da HUD (camada 1).
+	var camada := CanvasLayer.new()
+	camada.name = "ClimaNevasca"
+	camada.layer = 0
+	add_child(camada)
+	var clima: Control = NEVASCA.new()
+	clima.name = "Nevasca"
+	clima.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	camada.add_child(clima)
+	clima.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+
 
 func criar_texto(conteudo: String, tamanho: int, cor: Color, alinhamento: int = HORIZONTAL_ALIGNMENT_LEFT) -> Label:
 	var rotulo := Label.new()

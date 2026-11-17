@@ -226,6 +226,8 @@ radius = 20.0
 collision_layer = 2
 motion_mode = 1
 script = ExtResource("1_b0kkn")
+alcance_golpe = 80.0
+abertura_golpe = 180.0
 cena_projetil_gelo = ExtResource("2_qly61")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1298968696]

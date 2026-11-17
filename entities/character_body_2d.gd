@@ -3,6 +3,9 @@ extends CharacterBody2D
 @export var velocidade: float = 130.0
 @export var vida: int = 3
 @export var recarga_gelo: float = 3.0
+@export var alcance_golpe: float = 56.0
+@export_range(30.0, 180.0) var abertura_golpe: float = 115.0
+@export var intervalo_golpe: float = 0.4
 @export var cena_projetil_gelo: PackedScene
 
 var invencivel := false
@@ -14,6 +17,7 @@ var tempo_restante_gelo := 0.0
 @onready var hurtbox: Area2D = $Hurtbox
 @onready var ataque: Area2D = $Ataque
 @onready var golpe: ColorRect = $Ataque/Golpe
+const EFEITO_GOLPE = preload("res://scripts/efeito_golpe.gd")
 
 func _process(delta: float) -> void:
 	tempo_restante_gelo = maxf(0.0, tempo_restante_gelo - delta)
@@ -54,15 +58,29 @@ func levar_dano() -> void:
 
 func atacar() -> void:
 	pode_atacar = false
-	for corpo in ataque.get_overlapping_bodies():
-		if corpo.is_in_group("inimigos") and corpo.has_method("levar_golpe"):
-			corpo.levar_golpe()
-	golpe.visible = true
-	await get_tree().create_timer(0.1).timeout
-	if not is_inside_tree():
-		return
-	golpe.visible = false
-	await get_tree().create_timer(0.3).timeout
+	# O quadrado antigo permanece na cena, mas nunca e exibido.
+	golpe.hide()
+
+	# Visual acompanha a direcao do ultimo movimento (inclusive parado).
+	var visual: Node2D = EFEITO_GOLPE.new()
+	visual.set("direcao", ultima_direcao)
+	visual.set("raio", alcance_golpe)
+	add_child(visual)
+
+	# Dano em cone: apenas inimigos a frente, dentro do alcance.
+	var frente := ultima_direcao.normalized()
+	var angulo_minimo := cos(deg_to_rad(abertura_golpe * 0.5))
+	for inimigo in get_tree().get_nodes_in_group("inimigos"):
+		if not is_instance_valid(inimigo) or inimigo.is_queued_for_deletion():
+			continue
+		if not inimigo is Node2D or not inimigo.has_method("levar_golpe"):
+			continue
+		var deslocamento: Vector2 = inimigo.global_position - global_position
+		var distancia := deslocamento.length()
+		if distancia <= alcance_golpe and (distancia < 8.0 or frente.dot(deslocamento.normalized()) >= angulo_minimo):
+			inimigo.levar_golpe()
+
+	await get_tree().create_timer(maxf(0.1, intervalo_golpe)).timeout
 	if not is_inside_tree():
 		return
 	pode_atacar = true
