@@ -4,6 +4,7 @@ extends CharacterBody2D
 @export var vida: int = 1
 @export var forca_recuo: float = 230.0
 @export var duracao_recuo: float = 0.20
+@export_range(0.0, 0.6) var bonus_velocidade_nevasca: float = 0.16
 
 @onready var agente: NavigationAgent2D = $NavigationAgent2D
 const EFEITO_IMPACTO = preload("res://scripts/efeito_impacto.gd")
@@ -40,7 +41,12 @@ func _physics_process(delta: float) -> void:
 	var direcao := global_position.direction_to(proximo)
 	if direcao != Vector2.ZERO:
 		rotation = direcao.angle()
-	velocity = direcao * velocidade
+	# Na tempestade as focas cacam um pouco mais depressa.
+	var cenario := get_tree().current_scene
+	var intensidade := 0.0
+	if cenario != null and cenario.has_method("intensidade_da_nevasca"):
+		intensidade = float(cenario.intensidade_da_nevasca())
+	velocity = direcao * velocidade * (1.0 + bonus_velocidade_nevasca * intensidade)
 	move_and_slide()
 
 func levar_golpe() -> void:

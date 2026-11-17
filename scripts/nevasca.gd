@@ -2,12 +2,13 @@ extends Control
 ## Nevasca forte de tela inteira: flocos com profundidade, vento e rajadas.
 ## Desenhada na camada climatica, abaixo da HUD. Sem texturas externas.
 
-@export var intervalo_entre_nevascas: float = 12.0
+@export var intervalo_entre_nevascas: float = 42.0
 @export var duracao_nevasca: float = 24.0
 @export var tempo_transicao: float = 3.5
 @export_range(0.0, 0.8) var opacidade_nevoa: float = 0.46
 @export_range(150, 1100, 1) var quantidade_flocos: int = 660
 @export var forca_vento: float = 280.0
+@export var distancia_olhos: float = 260.0
 
 var tempo_total := 0.0
 var intensidade := 0.0
@@ -86,3 +87,28 @@ func _draw() -> void:
 		var espessura: float = floco["espessura"]
 		var deslocamento := Vector2(-comprimento * rajada, comprimento * (0.10 + prof * 0.20))
 		draw_line(p, p + deslocamento, Color(0.96, 0.98, 1.0, alpha * intensidade), espessura, true)
+
+	# Olhos de focas proximas surgem atraves da neve (sobrepostos a nevoa).
+	# So aparecem durante a tempestade para criar tensao, nao um radar permanente.
+	if intensidade < 0.40:
+		return
+	var cenario := get_tree().current_scene
+	if cenario == null or not cenario.has_node("Jogador"):
+		return
+	var jogador: Node2D = cenario.get_node("Jogador")
+	var transformacao: Transform2D = get_viewport().get_canvas_transform()
+	for inimigo in get_tree().get_nodes_in_group("inimigos"):
+		if not inimigo is Node2D or inimigo.is_queued_for_deletion():
+			continue
+		if jogador.global_position.distance_to(inimigo.global_position) > distancia_olhos:
+			continue
+		var p: Vector2 = transformacao * inimigo.global_position
+		if p.x < -25 or p.y < -25 or p.x > dim.x + 25 or p.y > dim.y + 25:
+			continue
+		var op := (intensidade - 0.4) / 0.6
+		var pulso := 0.75 + 0.25 * sin(tempo_total * 5.0 + p.x * 0.04)
+		var separacao: float = 5.5 * float(inimigo.scale.x)
+		for sinal in [-1.0, 1.0]:
+			var olho := p + Vector2(sinal * separacao, -4.0)
+			draw_circle(olho, 6.5, Color(0.8, 0.05, 0.08, 0.12 * op * pulso))
+			draw_circle(olho, 2.3, Color(0.96, 0.17, 0.14, 0.90 * op * pulso))

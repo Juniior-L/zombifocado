@@ -11,11 +11,17 @@ extends Node2D
 @export var itens_para_chefe: int = 15
 @export var vida_chefe: int = 12
 @export var velocidade_chefe: float = 88.0
+# Progressao: a cada 5 suprimentos e necessario enfrentar as focas.
+@export var itens_por_etapa: int = 5
+@export var abates_por_etapa: int = 2
+@export var exigir_derrotar_chefe: bool = true
 
 var abates := 0
 var coletados := 0
 var partida_encerrada := false
 var chefe_apareceu := false
+var chefe_derrotado := false
+var clima_atual: Control
 # Nome do marcador -> horario em segundos ate o qual ele fica bloqueado.
 var pontos_bloqueados_ate: Dictionary = {}
 var chefe: CharacterBody2D
@@ -62,6 +68,7 @@ func criar_nevasca() -> void:
 	clima.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	camada.add_child(clima)
 	clima.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	clima_atual = clima
 
 
 func criar_texto(conteudo: String, tamanho: int, cor: Color, alinhamento: int = HORIZONTAL_ALIGNMENT_LEFT) -> Label:
@@ -113,7 +120,7 @@ func criar_hud() -> void:
 	raiz.add_child(status)
 	ui_vida = criar_texto("VIDA  3/3", 17, TEXTO)
 	status.add_child(ui_vida)
-	ui_abates = criar_texto("Abates  0", 12, SECUNDARIO)
+	ui_abates = criar_texto("Abates  0 / 8", 12, SECUNDARIO)
 	status.add_child(ui_abates)
 	ui_estado = criar_texto("", 11, ALERTA)
 	status.add_child(ui_estado)
@@ -170,10 +177,10 @@ func criar_hud() -> void:
 
 func _process(_delta: float) -> void:
 	ui_vida.text = "VIDA  %d/3" % maxi(0, jogador.vida)
-	ui_abates.text = "Abates  %d" % abates
+	ui_abates.text = "Abates  %d / %d" % [abates, meta_total_abates()] if abates < meta_total_abates() else "Abates  %d" % abates
 	ui_itens.text = "ITENS  %d / %d" % [coletados, objetivo_itens]
 	ui_progresso.value = 100.0 * float(coletados) / float(maxi(1, objetivo_itens))
-	ui_estado.text = "Mutante na base" if chefe_apareceu and is_instance_valid(chefe) else ""
+	ui_estado.text = mensagem_objetivo()
 
 	var recarga: float = maxf(0.01, jogador.recarga_gelo)
 	var restante: float = jogador.tempo_restante_gelo
@@ -190,12 +197,53 @@ func _process(_delta: float) -> void:
 	if chefe_vivo:
 		ui_boss_barra.value = 100.0 * float(maxi(0, chefe.vida)) / float(maxi(1, vida_chefe))
 
+# A exigencia so sobe a cada bloco de itens; nunca consome abates.
+func meta_total_abates() -> int:
+	# A ultima etapa nao exige abates adicionais depois de chegar aos 20 itens.
+	# Ex.: 20 itens em etapas de 5, 2 abates/etapa => 6 abates no total.
+	var etapas_antes_final: int = maxi(0, int(ceil(float(objetivo_itens) / float(maxi(1, itens_por_etapa)))) - 1)
+	return maxi(0, abates_por_etapa) * etapas_antes_final
+
+func meta_abates_para_coletar() -> int:
+	var etapas_completas := int(coletados / maxi(1, itens_por_etapa))
+	return mini(meta_total_abates(), etapas_completas * maxi(0, abates_por_etapa))
+
+func pode_coletar() -> bool:
+	return not partida_encerrada and coletados < objetivo_itens and abates >= meta_abates_para_coletar()
+
+func mensagem_objetivo() -> String:
+	if coletados >= objetivo_itens:
+		if abates < meta_total_abates():
+			return "EXTRACAO  •  Elimine %d focas" % (meta_total_abates() - abates)
+		if exigir_derrotar_chefe and chefe_apareceu and not chefe_derrotado:
+			return "EXTRACAO  •  Derrote a mutante"
+		return ""
+	if not pode_coletar():
+		return "CONTENCAO  •  Elimine %d focas" % (meta_abates_para_coletar() - abates)
+	if chefe_apareceu and not chefe_derrotado:
+		return "Mutante na base"
+	return ""
+
+func tentar_vencer() -> void:
+	if coletados < objetivo_itens or abates < meta_total_abates():
+		return
+	if exigir_derrotar_chefe and chefe_apareceu and not chefe_derrotado:
+		return
+	vencer()
+
+func intensidade_da_nevasca() -> float:
+	if is_instance_valid(clima_atual):
+		return float(clima_atual.get("intensidade"))
+	return 0.0
+
 func inimigo_morreu(inimigo: Node2D) -> void:
 	if partida_encerrada:
 		return
 	abates += 1
 	if inimigo == chefe:
+		chefe_derrotado = true
 		chefe = null
+	tentar_vencer()
 
 func _on_horda_timeout() -> void:
 	if partida_encerrada or cena_inimigo == null:
@@ -273,9 +321,11 @@ func coletou(item_coletado: Area2D) -> void:
 		var agora: float = Time.get_ticks_msec() / 1000.0
 		pontos_bloqueados_ate[item_coletado.get("ponto_spawn")] = agora + maxf(0.0, espera_reutilizar_ponto)
 
+	if not pode_coletar():
+		return
 	coletados += 1
 	if coletados >= objetivo_itens:
-		vencer()
+		tentar_vencer()
 		return
 	if coletados >= itens_para_chefe and not chefe_apareceu:
 		chefe_apareceu = true
